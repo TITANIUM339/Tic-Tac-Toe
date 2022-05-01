@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 char player1, player2;
@@ -20,6 +21,7 @@ void PlayerInput();
 
 int main(void)
 {
+    srand(time(NULL));
     char response;
 
     while (true)
@@ -41,10 +43,7 @@ int main(void)
 
         if (option == 1)
         {
-            if (Start())
-            {
-                return 1;
-            }
+            if (Start()) return 1;
 
             do
             {
@@ -76,10 +75,7 @@ int main(void)
         }
         else
         {
-            if (Start())
-            {
-                return 1;
-            }
+            if (Start()) return 1;
 
             do
             {
@@ -135,6 +131,7 @@ int main(void)
 
         printf("Do you want to play again? (Y, N)\n");
         scanf("%c");
+
         if (scanf("%c", &response) == 0 || (toupper(response) != 'N' && toupper(response) != 'Y'))
         {
             printf("Invalid Input\n");
@@ -289,6 +286,7 @@ void PlayerInput()
     {
         printf("row: ");
         scanf("%c");
+
         if (scanf("%d", &y) == 0 || y < 1 || y > 3)
         {
             printf("Invalid Move\n");
@@ -300,6 +298,7 @@ void PlayerInput()
             {
                 scanf("%c");
                 printf("column: ");
+
                 if (scanf("%d", &x) == 0 || x < 1 || x > 3)
                 {
                     printf("Invalid Move\n");
