@@ -84,7 +84,7 @@ int main(void)
 
                 if (PlayerMove(player1, y, x))
                 {
-                    printf("Invalid Move\n");
+                    printf("\nInvalid Move.\n\n");
                 }
                 else
                 {
@@ -95,15 +95,15 @@ int main(void)
                     }
 
                     PrintBoard();
-                    printf("Player2\n");
 
                     while (true)
                     {
+                        printf("Player2\n");
                         PlayerInput();
 
                         if (PlayerMove(player2, y, x))
                         {
-                            printf("Invalid Move\n");
+                            printf("\nInvalid Move.\n\n");
                         }
                         else
                         {
