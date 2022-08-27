@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 
 char player1, player2;
@@ -10,100 +11,138 @@ char computer;
 char board[3][3];
 int y, x;
 
-void PrintBoard();
-char CheckWinner();
-int PlayerMove(char player, int x, int y);
-void Reset();
-int checkFreeSpaces();
-void ComputerMove(char computer);
-int Start();
-void PlayerInput();
+void print_board();
+char check_winner();
+int move_player(char player, int x, int y);
+void reset();
+int check_free_spaces();
+void computer_move(char computer);
+void team_select();
+void get_player_move();
+char* input(char* prompt);
 
-int main(void)
+
+int main()
 {
+    // Initializing the random number generator.
     srand(time(NULL));
+
+    // Player's response.
     char response;
 
     while (true)
     {
-        int option = 0;
+        // Player's selected option.
+        int option;
 
-        Reset();
+        char* tmp;
 
-        printf("Select Option:\n");
-        printf("1. Player1 vs Computer\n2. Player1 vs Player2\n\n");
+        // Resetting game board.
+        reset();
 
-        scanf("%d", &option);
+        // Printing out the options available to the player. 
+        printf("\n1. Player1 vs Computer\n2. Player1 vs Player2\n\n");
 
-        if (option != 1 && option != 2)
+        while (true)
         {
-            printf("\nInvalid Option :(\n");
-            return 1;
+            // Prompting the player for an option.
+            tmp = input("Select option (1, 2): ");
+
+            if (tmp == NULL) return 1;
+
+            option = atoi(tmp);
+
+            free(tmp);
+
+            // Making sure the player provided a valid option.
+            if (option != 1 && option != 2)
+            {
+                printf("Invalid Option.\n");
+                continue;
+            }
+
+            break;
         }
 
+        // Player vs computer.
         if (option == 1)
         {
-            if (Start()) return 1;
+            // Prompting player to select team.
+            team_select();
 
             do
             {
-                PlayerInput();
+                // Prompting player for a move.
+                get_player_move();
 
-                if (PlayerMove(player1, y, x))
+
+                // Making sure the player provided a valid move.
+                if (move_player(player1, y, x))
                 {
-                    printf("Invalid Move\n");
+                    printf("Invalid Move.\n");
                 }
+                // Computer making a move.
                 else
                 {
-                    ComputerMove(computer);
-                    PrintBoard();
+                    computer_move(computer);
+                    print_board();
                 }
-            } while (CheckWinner() == ' ' && checkFreeSpaces());
-
-            if (CheckWinner() == player1)
-            {
-                printf("You Won!\n");
             }
-            else if (CheckWinner() == computer)
+            // Keep looping over until there is no more spaces left or a winner has been determined. 
+            while (check_winner() == ' ' && check_free_spaces());
+
+            // Determining who the winner is.
+            if (check_winner() == player1)
             {
-                printf("You Lose!\n");
+                printf("You Win!\n");
+            }
+            else if (check_winner() == computer)
+            {
+                printf("You Lost!\n");
             }
             else
             {
                 printf("Tie!\n");
             }
         }
+        // Player1 vs Player2.
         else
         {
-            if (Start()) return 1;
+            // Prompting player to select team.
+            team_select();
 
             do
             {
-                printf("Player1\n");
-                PlayerInput();
+                // Prompting Player1 for a move.
+                printf("[Player1]\n");
+                get_player_move();
 
-                if (PlayerMove(player1, y, x))
+                // Making sure Player1 provided a valid move.
+                if (move_player(player1, y, x))
                 {
-                    printf("\nInvalid Move.\n\n");
+                    printf("Invalid Move.\n");
                 }
                 else
                 {
-                    if (CheckWinner() != ' ' || !checkFreeSpaces())
+                    // Checking if no more spaces are left or a winner has been determined.
+                    if (check_winner() != ' ' || !check_free_spaces())
                     {
-                        PrintBoard();
+                        print_board();
                         break;
                     }
 
-                    PrintBoard();
+                    print_board();
 
                     while (true)
                     {
-                        printf("Player2\n");
-                        PlayerInput();
+                        // Prompting Player2 for a move.
+                        printf("[Player2]\n");
+                        get_player_move();
 
-                        if (PlayerMove(player2, y, x))
+                        // Making sure Player2 provided a valid move.
+                        if (move_player(player2, y, x))
                         {
-                            printf("\nInvalid Move.\n\n");
+                            printf("Invalid Move.\n");
                         }
                         else
                         {
@@ -111,15 +150,18 @@ int main(void)
                         }
                     }
 
-                    PrintBoard();
+                    print_board();
                 }
-            } while (CheckWinner() == ' ' && checkFreeSpaces());
+            }
+            // Keep looping over until there is no more spaces left or a winner has been determined.
+            while (check_winner() == ' ' && check_free_spaces());
 
-            if (CheckWinner() == player1)
+            // Determining who the winner is.
+            if (check_winner() == player1)
             {
                 printf("Player1 Wins!\n");
             }
-            else if (CheckWinner() == player2)
+            else if (check_winner() == player2)
             {
                 printf("Player2 Wins!\n");
             }
@@ -129,31 +171,49 @@ int main(void)
             }
         }
 
-        printf("Do you want to play again? (Y, N)\n");
-        scanf("%c");
-
-        if (scanf("%c", &response) == 0 || (toupper(response) != 'N' && toupper(response) != 'Y'))
+        while (true)
         {
-            printf("Invalid Input\n");
+            // Asking the Player if he wants to play again.
+            tmp = input("Do you want to play again? (Y, N): ");
+
+            if (tmp == NULL) return 1;
+
+            // Making sure the Player provided a valid answer.
+            if (strlen(tmp) > 1)
+            {
+                printf("Invalid Input.\n");
+                free(tmp);
+                continue;
+            }
+
+            response = toupper(*tmp);
+            free(tmp);
+
+            if (response != 'N' && response != 'Y')
+            {
+                printf("Invalid Input.\n");
+                continue;
+            }
+
             break;
         }
-        else if (toupper(response) == 'N')
+
+        // Stopping the game if the Player answered no (N).
+        if (response == 'N')
         {
             printf("\nThanks for Playing!\n");
             break;
         }
-        else
-        {
-            continue;
-        }
     }
 
     return 0;
-} 
+}
 
 
-void PrintBoard()
+// Prints the game board.
+void print_board()
 {
+    printf("\n");
     printf(" %c | %c | %c ", board[0][0], board[0][1], board[0][2]);
     printf("\n---|---|---\n");
     printf(" %c | %c | %c ", board[1][0], board[1][1], board[1][2]);
@@ -163,7 +223,8 @@ void PrintBoard()
 }
 
 
-void Reset()
+// Resets game board.
+void reset()
 {
     for (int i = 0; i < 3; i++)
     {
@@ -175,8 +236,10 @@ void Reset()
 }
 
 
-int PlayerMove(char player, int y, int x)
+// Moves player.
+int move_player(char player, int y, int x)
 {
+    // Checking if there is an empty space.
     if (board[y][x] == ' ')
     {
         board[y][x] = player;
@@ -187,12 +250,16 @@ int PlayerMove(char player, int y, int x)
 }
 
 
-int checkFreeSpaces()
+// Checks for free spaces on the game board.
+int check_free_spaces()
 {
+    // Looping over rows.
     for (int i = 0; i < 3; i++)
     {
+        // Looping over columns.
         for (int j = 0; j < 3; j++)
         {
+            // Checking for a free space.
             if (board[i][j] == ' ')
             {
                 return 1;
@@ -204,11 +271,12 @@ int checkFreeSpaces()
 }
 
 
-void ComputerMove(char computer)
+// Pseudo randomly generated computer move.
+void computer_move(char computer)
 {
     int y, x;
 
-    if (checkFreeSpaces())
+    if (check_free_spaces())
     {
         do
         {
@@ -221,98 +289,157 @@ void ComputerMove(char computer)
 }
 
 
-char CheckWinner()
+// Checking for a winner.
+char check_winner()
 {
+    // Looping 3 times over rows and columns.
     for (int i = 0; i < 3; i++)
     {
+        // Looking for a winner in rows.
         if (board[i][0] == board[i][1] && board[i][0] == board[i][2])
         {
             return board[i][0];
         }
 
+        // Looking for a winner in columns.
         if (board[0][i] == board[1][i] && board[0][i] == board[2][i])
         {
             return board[0][i];
         }
     }
 
+    // Looking diagonally (\) for a winner.
     if (board[0][0] == board[1][1] && board[0][0] == board[2][2])
     {
         return board[0][0];
     }
+    // Looking diagonally (/) for a winner.
     else if (board[0][2] == board[1][1] && board[0][2] == board[2][0])
     {
         return board[0][2];
     }
 
+    // Returning an empty space if there are no winners.
     return ' ';
 }
 
 
-int Start()
-{
-    char tmp;
-
-    printf("Player1 choose your team (X, O)\n");
-    scanf("%c");
-    scanf("%c", &tmp);
-
-    player1 = toupper(tmp);
-
-    if (player1 != 'X' && player1 != 'O')
-    {
-        printf("Invalid team\n");
-        return 1;
-    }
-    else if (player1 == 'X')
-    {
-        computer = player2 = 'O';
-    }
-    else
-    {
-        computer = player2 = 'X';
-    }
-
-    PrintBoard();
-    printf("Make a move!\n");
-
-    return 0;
-}
-
-
-void PlayerInput()
+// Prompts the player to select a team.
+void team_select()
 {
     while (true)
     {
-        printf("row: ");
-        scanf("%c");
+        // Prompting player to select a team.
+        char* tmp = input("Player1 choose your team (X, O): ");
 
-        if (scanf("%d", &y) == 0 || y < 1 || y > 3)
+        if (tmp == NULL) exit(1);
+
+        // Making sure player provided a valid team.
+        if (strlen(tmp) > 1)
         {
-            printf("Invalid Move\n");
+            printf("Invalid team.\n");
+            free(tmp);
             continue;
+        }
+
+        player1 = toupper(*tmp);
+        free(tmp);
+
+        // Assigning other player's their team.
+        if (player1 != 'X' && player1 != 'O')
+        {
+            printf("Invalid team.\n");
+            continue;
+        }
+        else if (player1 == 'X')
+        {
+            computer = player2 = 'O';
         }
         else
         {
-            while (true)
-            {
-                scanf("%c");
-                printf("column: ");
-
-                if (scanf("%d", &x) == 0 || x < 1 || x > 3)
-                {
-                    printf("Invalid Move\n");
-                    continue;
-                }
-                else
-                {
-                    y--;
-                    x--;
-                    break;
-                }
-            }
-
-            break;
+            computer = player2 = 'X';
         }
+
+        print_board();
+        printf("Make a move!\n");
+
+        break;
     }
+}
+
+// Prompts the player for a move based on x, y coordinates.
+void get_player_move()
+{
+    while (true)
+    {
+        // Prompting player for y coordinate.
+        char* tmp = input("Row: ");
+
+        if (tmp == NULL) exit(1);
+
+        y = atoi(tmp);
+
+        free(tmp);
+
+        // Making sure player provided a valid move.
+        if (y < 1 || y > 3)
+        {
+            printf("Invalid Move.\n");
+            continue;
+        }
+
+        // // Prompting player for x coordinate.
+        tmp = input("Column: ");
+
+        if (tmp == NULL) exit(1);
+
+        x = atoi(tmp);
+
+        free(tmp);
+
+        // Making sure player provided a valid move.
+        if (x < 1 || x > 3)
+        {
+            printf("Invalid Move.\n");
+            continue;
+        }
+
+        y--;
+        x--;
+        break;
+    }
+}
+
+// Gets input from player, simillar to the input function in python.
+char* input(char* prompt)
+{
+    char* string = NULL;
+    char* tmp = NULL;
+    char c = ' ';
+    int counter;
+
+    printf("%s", prompt);
+
+    // Looping over player's input and resizing (string) accordingly. 
+    for (counter = 1; c != '\n' && c != EOF; counter++)
+    {
+        c = getc(stdin);
+
+        tmp = realloc(string, counter * sizeof * string);
+
+        if (tmp == NULL)
+        {
+            free(string);
+            return NULL;
+        }
+
+        string = tmp;
+
+        string[counter - 1] = c;
+    }
+
+    // Assigning null to the end of the string;
+    string[counter - 2] = '\0';
+
+    return string;
 }
