@@ -16,7 +16,7 @@ char check_winner();
 int move_player(char player, int x, int y);
 void reset();
 int check_free_spaces();
-void computer_move(char computer);
+void get_computer_move(char computer);
 void team_select();
 void get_player_move();
 char* input(char* prompt);
@@ -49,6 +49,13 @@ int main()
             tmp = input("Select option (1, 2): ");
 
             if (tmp == NULL) return 1;
+
+            if (strlen(tmp) > 1)
+            {
+                printf("Invalid Option.\n");
+                free(tmp);
+                continue;
+            }
 
             option = atoi(tmp);
 
@@ -84,7 +91,7 @@ int main()
                 // Computer making a move.
                 else
                 {
-                    computer_move(computer);
+                    get_computer_move(computer);
                     print_board();
                 }
             }
@@ -98,7 +105,7 @@ int main()
             }
             else if (check_winner() == computer)
             {
-                printf("You Lost!\n");
+                printf("You Lose!\n");
             }
             else
             {
@@ -272,7 +279,7 @@ int check_free_spaces()
 
 
 // Pseudo randomly generated computer move.
-void computer_move(char computer)
+void get_computer_move(char computer)
 {
     int y, x;
 
@@ -282,7 +289,8 @@ void computer_move(char computer)
         {
             y = rand() % 3;
             x = rand() % 3;
-        } while (board[y][x] != ' ');
+        }
+        while (board[y][x] != ' ');
 
         board[y][x] = computer;
     }
@@ -373,9 +381,16 @@ void get_player_move()
     while (true)
     {
         // Prompting player for y coordinate.
-        char* tmp = input("Row: ");
+        char* tmp = input("Row (1-3): ");
 
         if (tmp == NULL) exit(1);
+
+        if (strlen(tmp) > 1)
+        {
+            printf("Invalid Move.\n");
+            free(tmp);
+            continue;
+        }
 
         y = atoi(tmp);
 
@@ -389,9 +404,16 @@ void get_player_move()
         }
 
         // // Prompting player for x coordinate.
-        tmp = input("Column: ");
+        tmp = input("Column (1-3): ");
 
         if (tmp == NULL) exit(1);
+
+        if (strlen(tmp) > 1)
+        {
+            printf("Invalid Move.\n");
+            free(tmp);
+            continue;
+        }
 
         x = atoi(tmp);
 
@@ -406,6 +428,7 @@ void get_player_move()
 
         y--;
         x--;
+
         break;
     }
 }
@@ -425,7 +448,7 @@ char* input(char* prompt)
     {
         c = getc(stdin);
 
-        tmp = realloc(string, counter * sizeof * string);
+        tmp = realloc(string, counter * sizeof *string);
 
         if (tmp == NULL)
         {
