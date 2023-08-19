@@ -1,7 +1,7 @@
 # Tic-Tac-Toe
 An over engineered Tic-Tac-Toe game.
 
-This is command-line Tic-Tac-Toe game made in C.
+This is a command-line Tic-Tac-Toe game made in C.
 
 You can play against a second player or against the computer.
 
