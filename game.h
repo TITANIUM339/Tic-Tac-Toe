@@ -25,7 +25,7 @@ void print_board();
 char check_winner(char board[3][3]);
 
 // Moves player.
-int move_player(char player, int x, int y);
+int move_player(char player, coordinate move);
 
 // Resets game board.
 void reset_board();
@@ -56,3 +56,6 @@ void delete_board(char** board);
 
 // The minimax algorithm.
 int minimax(char board[3][3], char computer);
+
+// Fills array with actions.
+void fill(coordinate* actions);
