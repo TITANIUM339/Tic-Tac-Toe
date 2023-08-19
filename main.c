@@ -54,10 +54,10 @@ int main()
             do
             {
                 // Prompting player for a move.
-                coordinate position = get_player_move();
+                coordinate move = get_player_move();
 
                 // Making sure the player provided a valid move.
-                if (move_player(players.player1, position.x, position.y))
+                if (move_player(players.player1, move))
                 {
                     printf("Invalid Move.\n");
                 }
@@ -81,10 +81,10 @@ int main()
             {
                 // Prompting Player1 for a move.
                 printf("[Player1]\n");
-                coordinate position = get_player_move();
+                coordinate move = get_player_move();
 
                 // Making sure Player1 provided a valid move.
-                if (move_player(players.player1, position.x, position.y))
+                if (move_player(players.player1, move))
                 {
                     printf("Invalid Move.\n");
                 }
@@ -104,10 +104,10 @@ int main()
                         // Prompting Player2 for a move.
                         printf("[Player2]\n");
                         
-                        coordinate position = get_player_move();
+                        coordinate move = get_player_move();
 
                         // Making sure Player2 provided a valid move.
-                        if (move_player(players.player2, position.x, position.y))
+                        if (move_player(players.player2, move))
                         {
                             printf("Invalid Move.\n");
                         }
