@@ -31,12 +31,12 @@ void reset_board()
 }
 
 
-int move_player(char player, int x, int y)
+int move_player(char player, coordinate move)
 {
     // Checking if there is an empty space.
-    if (board[x][y] == ' ')
+    if (board[move.x][move.y] == ' ')
     {
-        board[x][y] = player;
+        board[move.x][move.y] = player;
         return 0;
     }
 
@@ -70,8 +70,9 @@ void computer_move(char computer)
 {
     
     int spaceCount = check_free_spaces(board);
+    char winner = check_winner(board);
 
-    if (spaceCount == 0) return;
+    if (spaceCount == 0 || winner != ' ') return;
 
     // Array of all possible actions.
     coordinate actions[spaceCount];
@@ -154,25 +155,25 @@ char check_winner(char board[3][3])
         // Looking for a winner in rows.
         if (board[i][0] == board[i][1] && board[i][0] == board[i][2])
         {
-            return board[i][0];
+            if (board[i][0] == 'X' || board[i][0] == 'O') return board[i][0];
         }
 
         // Looking for a winner in columns.
         if (board[0][i] == board[1][i] && board[0][i] == board[2][i])
         {
-            return board[0][i];
+            if (board[0][i] == 'X' || board[0][i] == 'O') return board[0][i];
         }
     }
 
     // Looking diagonally (\) for a winner.
     if (board[0][0] == board[1][1] && board[0][0] == board[2][2])
     {
-        return board[0][0];
+        if (board[0][0] == 'X' || board[0][0] == 'O') return board[0][0];
     }
     // Looking diagonally (/) for a winner.
     else if (board[0][2] == board[1][1] && board[0][2] == board[2][0])
     {
-        return board[0][2];
+        if (board[0][2] == 'X' || board[0][2] == 'O') return board[0][2];
     }
 
     // Returning an empty space if there are no winners.
