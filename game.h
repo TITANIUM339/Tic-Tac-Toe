@@ -56,6 +56,3 @@ void delete_board(char** board);
 
 // The minimax algorithm.
 int minimax(char board[3][3], char computer);
-
-// Fills array with actions.
-void fill(coordinate* actions);
