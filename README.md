@@ -1,8 +1,8 @@
 # Tic-Tac-Toe
-Simple Tic-Tac-Toe game.
+An over engineered Tic-Tac-Toe game.
 
-This is a simple command-line Tic-Tac-Toe game made in C.
+This is command-line Tic-Tac-Toe game made in C.
 
 You can play against a second player or against the computer.
 
-Moves made by the computer are pseudo randomly generated.
+Moves made by the computer are generated using the minimax algorithm.
