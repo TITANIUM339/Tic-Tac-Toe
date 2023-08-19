@@ -48,8 +48,10 @@ int move_player(char player, int x, int y)
 
 
 // Checks for free spaces on the game board.
-int check_free_spaces()
+int check_free_spaces(char board[3][3])
 {
+    int count = 0;
+
     // Looping over rows.
     for (int i = 0; i < 3; i++)
     {
@@ -59,36 +61,88 @@ int check_free_spaces()
             // Checking for a free space.
             if (board[i][j] == ' ')
             {
-                return 1;
+                count++;
             }
         }
     }
 
-    return 0;
+    return count;
 }
 
 
 // Pseudo randomly generated computer move.
 void computer_move(char computer)
 {
-    int x, y;
+    
+    int spaceCount = check_free_spaces(board);
 
-    if (check_free_spaces())
+    coordinate actions[spaceCount];
+
+    int count = 0;
+
+    for (int i = 0; i < 3; i++)
     {
-        do
+        for (int j = 0; j < 3; j++)
         {
-            x = rand() % 3;
-            y = rand() % 3;
+            if (board[i][j] == ' ')
+            {
+                actions[count].x = i;
+                actions[count].y = j;
+                count++;
+            }
         }
-        while (board[x][y] != ' ');
-
-        board[x][y] = computer;
     }
+
+    int value = computer == 'X'? -9999:9999;
+
+    coordinate bestMove;
+
+    for (int i = 0; i < spaceCount; i++)
+    {
+        char** tmp = move_result(board, actions[i], computer);
+
+        if (tmp == NULL) exit(1);
+
+        char actionResult[3][3];
+
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                actionResult[i][j] = tmp[i][j];
+            }
+        }
+
+        delete_board(tmp);
+
+        int actionValue = minimax(actionResult, computer == 'X'? 'O':'X');
+
+        if (computer == 'X')
+        {
+            if (actionValue > value)
+            {
+                value = actionValue;
+                bestMove = actions[i];
+            }
+        }
+
+        if (computer == 'O')
+        {
+            if (actionValue < value)
+            {
+                value = actionValue;
+                bestMove = actions[i];
+            }
+        }
+        
+    }
+
+    board[bestMove.x][bestMove.y] = computer;
 }
 
 
 // Checking for a winner.
-char check_winner()
+char check_winner(char board[3][3])
 {
     // Looping 3 times over rows and columns.
     for (int i = 0; i < 3; i++)
@@ -246,7 +300,7 @@ char* input(char* prompt)
     {
         c = getc(stdin);
 
-        tmp = realloc(string, counter * sizeof *string);
+        tmp = realloc(string, counter * sizeof (char));
 
         if (tmp == NULL)
         {
@@ -263,4 +317,133 @@ char* input(char* prompt)
     string[counter - 2] = '\0';
 
     return string;
+}
+
+char** create_board()
+{
+    char* values = calloc(9, sizeof (char));
+    char** rows = malloc(3 * sizeof (char*));
+
+    if (values == NULL || rows == NULL) exit(1);
+
+    for (int i = 0; i < 3; i++)
+    {
+        rows[i] = values + i * 3;
+    }
+
+    return rows;
+}
+
+void delete_board(char** board)
+{
+    free(*board);
+    free(board);
+}
+
+char** move_result(char board[3][3], coordinate move, char computer)
+{
+    char** boardCopy = create_board();
+
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            boardCopy[i][j] = board[i][j];
+        }
+        
+    }
+
+    boardCopy[move.x][move.y] = computer;
+
+    return boardCopy;
+}
+
+int minimax(char board[3][3], char computer)
+{
+    char winner = check_winner(board);
+    int spaceCount = check_free_spaces(board);
+    coordinate actions[spaceCount];
+    int count = 0;
+
+    if (spaceCount == 0 || winner != ' ')
+    {
+        if (winner == 'X') return 1;
+        if (winner == ' ') return 0;
+        if (winner == 'O') return -1;   
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (board[i][j] == ' ')
+            {
+                actions[count].x = i;
+                actions[count].y = j;
+                count++;
+            }
+        }
+    }
+    
+    if (computer == 'X')
+    {
+        int value = -9999;
+
+        for (int i = 0; i < spaceCount; i++)
+        {
+            char** tmp = move_result(board, actions[i], computer);
+            
+            if (tmp == NULL) exit(1);
+            
+            char actionResult[3][3];
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    actionResult[i][j] = tmp[i][j];
+                }
+                
+            }
+            
+            delete_board(tmp);
+
+            int actionValue = minimax(actionResult, 'O');
+            
+            if (actionValue > value) value = actionValue;
+        }
+        
+        return value;
+    }
+    
+    if (computer == 'O')
+    {
+        int value = 9999;
+
+        for (int i = 0; i < spaceCount; i++)
+        {
+            char** tmp = move_result(board, actions[i], computer);
+
+            if (tmp == NULL) exit(1);
+            
+            char actionResult[3][3];
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    actionResult[i][j] = tmp[i][j];
+                }
+                
+            }
+            
+            delete_board(tmp);
+
+            int actionValue = minimax(actionResult, 'X');
+
+            if (actionValue < value) value = actionValue;
+        }
+        
+        return value;
+    }
 }

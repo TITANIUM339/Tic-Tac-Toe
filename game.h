@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
 
 
@@ -21,13 +20,13 @@ typedef struct Coordinate {
 
 void print_board();
 
-char check_winner();
+char check_winner(char board[3][3]);
 
 int move_player(char player, int x, int y);
 
 void reset_board();
 
-int check_free_spaces();
+int check_free_spaces(char board[3][3]);
 
 void computer_move(char computer);
 
@@ -36,3 +35,11 @@ team get_player_team();
 coordinate get_player_move();
 
 char* input(char* prompt);
+
+char** create_board();
+
+char** move_result(char board[3][3], coordinate move, char computer);
+
+void delete_board(char** board);
+
+int minimax(char board[3][3], char computer);

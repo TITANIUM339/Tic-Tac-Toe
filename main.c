@@ -2,9 +2,6 @@
 
 int main()
 {
-    // Initializing the random number generator.
-    srand(time(NULL));
-
     while (true)
     {
         // Player's selected option.
@@ -72,7 +69,7 @@ int main()
                 }
             }
             // Keep looping over until there is no more spaces left or a winner has been determined. 
-            while (check_winner() == ' ' && check_free_spaces());
+            while (check_winner(board) == ' ' && check_free_spaces(board));
         }
         // Player1 vs Player2.
         else
@@ -94,7 +91,7 @@ int main()
                 else
                 {
                     // Checking if no more spaces are left or a winner has been determined.
-                    if (check_winner() != ' ' || !check_free_spaces())
+                    if (check_winner(board) != ' ' || !check_free_spaces(board))
                     {
                         print_board();
                         break;
@@ -124,15 +121,15 @@ int main()
                 }
             }
             // Keep looping over until there is no more spaces left or a winner has been determined.
-            while (check_winner() == ' ' && check_free_spaces());
+            while (check_winner(board) == ' ' && check_free_spaces(board));
         }
 
         // Determining who the winner is.
-        if (check_winner() == players.player1)
+        if (check_winner(board) == players.player1)
         {
             printf("Player1 Wins!\n");
         }
-        else if (check_winner() == players.player2)
+        else if (check_winner(board) == players.player2)
         {
             printf("Player2 Wins!\n");
         }
