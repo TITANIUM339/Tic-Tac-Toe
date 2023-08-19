@@ -4,7 +4,6 @@
 char board[3][3];
 
 
-// Prints the game board.
 void print_board()
 {
     // Clears the screen.
@@ -20,7 +19,6 @@ void print_board()
 }
 
 
-// Resets game board.
 void reset_board()
 {
     for (int i = 0; i < 3; i++)
@@ -33,7 +31,6 @@ void reset_board()
 }
 
 
-// Moves player.
 int move_player(char player, int x, int y)
 {
     // Checking if there is an empty space.
@@ -47,7 +44,6 @@ int move_player(char player, int x, int y)
 }
 
 
-// Checks for free spaces on the game board.
 int check_free_spaces(char board[3][3])
 {
     int count = 0;
@@ -70,16 +66,19 @@ int check_free_spaces(char board[3][3])
 }
 
 
-// Pseudo randomly generated computer move.
 void computer_move(char computer)
 {
     
     int spaceCount = check_free_spaces(board);
 
+    if (spaceCount == 0) return;
+
+    // Array of all possible actions.
     coordinate actions[spaceCount];
 
     int count = 0;
 
+    // Filling array with actions.
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
@@ -93,12 +92,15 @@ void computer_move(char computer)
         }
     }
 
+    // X is the MAX and O is thi MIN player.
     int value = computer == 'X'? -9999:9999;
 
     coordinate bestMove;
 
+    // Loop over all actions.
     for (int i = 0; i < spaceCount; i++)
     {
+        // Result of made action.
         char** tmp = move_result(board, actions[i], computer);
 
         if (tmp == NULL) exit(1);
@@ -115,8 +117,10 @@ void computer_move(char computer)
 
         delete_board(tmp);
 
+        // Game board value resulted from made action.
         int actionValue = minimax(actionResult, computer == 'X'? 'O':'X');
 
+        // Max player will try to maximize value.
         if (computer == 'X')
         {
             if (actionValue > value)
@@ -125,8 +129,8 @@ void computer_move(char computer)
                 bestMove = actions[i];
             }
         }
-
-        if (computer == 'O')
+        // Min player will try to minimize value.
+        else
         {
             if (actionValue < value)
             {
@@ -137,11 +141,11 @@ void computer_move(char computer)
         
     }
 
+    // Making move.
     board[bestMove.x][bestMove.y] = computer;
 }
 
 
-// Checking for a winner.
 char check_winner(char board[3][3])
 {
     // Looping 3 times over rows and columns.
@@ -176,7 +180,6 @@ char check_winner(char board[3][3])
 }
 
 
-// Prompts the player to select a team.
 team get_player_team()
 {
     team players;
@@ -199,12 +202,12 @@ team get_player_team()
         players.player1 = toupper(*tmp);
         free(tmp);
 
-        // Assigning other player's their team.
         if (players.player1 != 'X' && players.player1 != 'O')
         {
             printf("Invalid team.\n");
             continue;
         }
+        // Assigning player2 their team.
         else if (players.player1 == 'X')
         {
             players.player2 = 'O';
@@ -223,7 +226,7 @@ team get_player_team()
     return players;
 }
 
-// Prompts the player for a move based on x, y coordinates.
+
 coordinate get_player_move()
 {
     coordinate position;
@@ -285,7 +288,7 @@ coordinate get_player_move()
     return position;
 }
 
-// Gets input from player, simillar to the input function in python.
+
 char* input(char* prompt)
 {
     char* string = NULL;
@@ -328,6 +331,7 @@ char** create_board()
 
     for (int i = 0; i < 3; i++)
     {
+        // Assigning the memory address of the beginning of every 3 block chunks.
         rows[i] = values + i * 3;
     }
 
@@ -344,6 +348,7 @@ char** move_result(char board[3][3], coordinate move, char computer)
 {
     char** boardCopy = create_board();
 
+    // Copy board values.
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
@@ -353,6 +358,7 @@ char** move_result(char board[3][3], coordinate move, char computer)
         
     }
 
+    // Apply move to board copy.
     boardCopy[move.x][move.y] = computer;
 
     return boardCopy;
@@ -365,6 +371,7 @@ int minimax(char board[3][3], char computer)
     coordinate actions[spaceCount];
     int count = 0;
 
+    // Returning the board value if the game has reached a terminal state.
     if (spaceCount == 0 || winner != ' ')
     {
         if (winner == 'X') return 1;
@@ -385,6 +392,7 @@ int minimax(char board[3][3], char computer)
         }
     }
     
+    // Max player.
     if (computer == 'X')
     {
         int value = -9999;
@@ -413,10 +421,11 @@ int minimax(char board[3][3], char computer)
             if (actionValue > value) value = actionValue;
         }
         
+        // Returns highest found value.
         return value;
     }
-    
-    if (computer == 'O')
+    // Min player.
+    else
     {
         int value = 9999;
 
@@ -444,6 +453,7 @@ int minimax(char board[3][3], char computer)
             if (actionValue < value) value = actionValue;
         }
         
+        // Returns lowest found value.
         return value;
     }
 }
