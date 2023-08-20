@@ -94,7 +94,7 @@ void computer_move(char computer)
     }
 
     // X is the MAX and O is thi MIN player.
-    int value = computer == 'X'? -9999:9999;
+    int value = computer == 'X'? -1:1;
 
     coordinate bestMove;
 
@@ -396,7 +396,7 @@ int minimax(char board[3][3], char computer)
     // Max player.
     if (computer == 'X')
     {
-        int value = -9999;
+        int value = -1;
 
         for (int i = 0; i < spaceCount; i++)
         {
@@ -419,6 +419,9 @@ int minimax(char board[3][3], char computer)
 
             int actionValue = minimax(actionResult, 'O');
             
+            // If the best move is already found return the value immediately, no need to keep searching.
+            if (actionValue == 1) return 1;
+
             if (actionValue > value) value = actionValue;
         }
         
@@ -428,7 +431,7 @@ int minimax(char board[3][3], char computer)
     // Min player.
     else
     {
-        int value = 9999;
+        int value = 1;
 
         for (int i = 0; i < spaceCount; i++)
         {
@@ -451,6 +454,9 @@ int minimax(char board[3][3], char computer)
 
             int actionValue = minimax(actionResult, 'X');
 
+            // If the best move is already found return the value immediately, no need to keep searching.
+            if (actionValue == -1) return -1;
+            
             if (actionValue < value) value = actionValue;
         }
         
